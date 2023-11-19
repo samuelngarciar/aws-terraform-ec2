@@ -44,7 +44,8 @@ data "aws_ami" "ubuntu" {
 
 resource "aws_instance" "main" {
   ami           = data.aws_ami.ubuntu.id
-  instance_type = "t2.micro"
+  instance_type = "t2.micro"  
+  user_data              = file("userdata.tpl")
 
   tags = {
     Name  = "${var.project_name}-instance"
