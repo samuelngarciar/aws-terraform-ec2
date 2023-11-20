@@ -69,7 +69,7 @@ resource "aws_instance" "ec2" {
 }
 
 resource "aws_security_group" "ec2" {
-   name       = "sg-${var.project_name}-instance"
+   name       = "${var.project_name}-sg"
    description = "the security group"
    vpc_id      = "${data.terraform_remote_state.admnet.outputs.vpc_id}"
 
