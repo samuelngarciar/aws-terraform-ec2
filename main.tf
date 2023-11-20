@@ -52,26 +52,14 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"] # Canonical
-}
-
-resource "aws_instance" "ec2" {
-  ami           = data.aws_ami.ubuntu.id
-  instance_type = "t2.micro"  
-  #user_data    = file("userdata.tpl")
-  subnet_id     = data.terraform_remote_state.admnet.outputs.subnet_id
-  
-  tags = {
-    Name  = "${var.project_name}-instance"
-    TTL   = var.ttl
-    Owner = "${var.project_name}-guide"
-  }
+  owners = ["099720109477"]
 }
 
 resource "aws_security_group" "ec2" {
    name       = "${var.project_name}-sg"
    description = "the security group"
    vpc_id      = "${data.terraform_remote_state.admnet.outputs.vpc_id}"
+  
 
    ingress {
      from_port  = 80
@@ -94,3 +82,18 @@ resource "aws_security_group" "ec2" {
      cidr_blocks = ["0.0.0.0/0"]
    }
  }
+
+resource "aws_instance" "ec2" {
+  ami           = data.aws_ami.ubuntu.id
+  instance_type = "t2.micro"  
+  #user_data    = file("userdata.tpl")
+  subnet_id     = data.terraform_remote_state.admnet.outputs.subnet_id
+  vpc_security_group_ids = [aws_security_group.ec2.id]
+  
+  tags = {
+    Name  = "${var.project_name}-instance"
+    TTL   = var.ttl
+    Owner = "${var.project_name}-guide"
+  }
+}
+
