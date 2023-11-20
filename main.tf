@@ -55,11 +55,11 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
-resource "aws_instance" "main" {
+resource "aws_instance" "ec2" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"  
-  user_data              = file("userdata.tpl")
-  subnet_id        = data.terraform_remote_state.admnet.outputs.subnet_id
+  #user_data    = file("userdata.tpl")
+  subnet_id     = data.terraform_remote_state.admnet.outputs.subnet_id
   
   tags = {
     Name  = "${var.project_name}-instance"
@@ -68,9 +68,10 @@ resource "aws_instance" "main" {
   }
 }
 
-resource "aws_security_group" "main" {
-   name       = "main"
-   description = "Example security group"
+resource "aws_security_group" "ec2" {
+   name       = "sg-${var.project_name}-instance"
+   description = "the security group"
+   vpc_id      = "${data.terraform_remote_state.admnet.outputs.vpc_id}"
 
    ingress {
      from_port  = 80
