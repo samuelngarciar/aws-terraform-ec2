@@ -1,8 +1,5 @@
-# Copyright (c) HashiCorp, Inc.
-# SPDX-License-Identifier: MPL-2.0
-
 provider "aws" {
-  region = datanet.terraform_remote_state.admnet.outputs.region_name
+  region = data.terraform_remote_state.admnet.outputs.region_name
 
   access_key = data.vault_aws_access_credentials.creds.access_key
   secret_key = data.vault_aws_access_credentials.creds.secret_key
@@ -29,7 +26,7 @@ data "vault_aws_access_credentials" "creds" {
 
 
 
-datanet "terraform_remote_state" "admnet" {
+data "terraform_remote_state" "admnet" {
   backend = "remote"
 
 config = {
@@ -62,7 +59,7 @@ resource "aws_instance" "main" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"  
   user_data              = file("userdata.tpl")
-  subnet_id        = datanet.terraform_remote_state.admnet.outputs.subnet_id
+  subnet_id        = data.terraform_remote_state.admnet.outputs.subnet_id
   
   tags = {
     Name  = "${var.project_name}-instance"
